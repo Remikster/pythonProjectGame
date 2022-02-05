@@ -46,6 +46,26 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
+    def gun(self):
+        bullet = Bullet(self.rect.centerx, self.rect.top)
+        all_sprites.add(bullet)
+        bullets.add(bullet)
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((10, 20))
+        self.rect = self.image.get_rect()
+        self.image.fill(YELLOW)
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speedy = -10
+
+    def update(self):
+        self.rect.y += self.speedy
+        if self.rect.bottom < 0:
+            self.kill()
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -70,8 +90,10 @@ player = Player()
 all_sprites.add(player)
 all_sprites = sprites
 enemy = sprites
+bullets = sprites
 player = Player()
 all_sprites.add(player)
+
 for i in range(8):
     en = Enemy()
     all_sprites.add(en)
@@ -83,6 +105,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player.gun()
 
     all_sprites.update()
 

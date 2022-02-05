@@ -17,7 +17,7 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("0")
 clock = pygame.time.Clock()
-sprites = pygame.sprite.Group()
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -36,10 +36,6 @@ class Player(pygame.sprite.Sprite):
             self.speedx = -10
         if keystate[pygame.K_RIGHT]:
             self.speedx = 10
-        if keystate[pygame.K_DOWN]:
-            self.speedy = -10
-        if keystate[pygame.KEYUP]:
-            self.speedy = 10
         self.rect.x += self.speedx
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
@@ -51,12 +47,13 @@ class Player(pygame.sprite.Sprite):
         all_sprites.add(bullet)
         bullets.add(bullet)
 
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((10, 20))
-        self.rect = self.image.get_rect()
         self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
         self.speedy = -10
@@ -65,6 +62,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         if self.rect.bottom < 0:
             self.kill()
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -85,15 +83,12 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(1, 8)
 
-all_sprites = pygame.sprite.Group()
-player = Player()
-all_sprites.add(player)
-all_sprites = sprites
-enemy = sprites
-bullets = sprites
-player = Player()
-all_sprites.add(player)
 
+all_sprites = pygame.sprite.Group()
+enemy = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+player = Player()
+all_sprites.add(player)
 for i in range(8):
     en = Enemy()
     all_sprites.add(en)
@@ -111,8 +106,19 @@ while running:
 
     all_sprites.update()
 
+    hits = pygame.sprite.groupcollide(enemy, bullets, True, True)
+    for hit in hits:
+        en = Enemy()
+        all_sprites.add(en)
+        enemy.add(en)
+
+    hits = pygame.sprite.spritecollide(player, enemy, False)
+    if hits:
+        running = False
+
     screen.fill(BLACK)
     all_sprites.draw(screen)
     pygame.display.update()
+
 
 pygame.quit()

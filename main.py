@@ -1,5 +1,6 @@
 import pygame
 import random
+from os import path
 
 WIDTH = 600
 HEIGHT = 800
@@ -15,15 +16,16 @@ YELLOW = (255, 255, 0)
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("0")
+pygame.display.set_caption("Space Vexus")
 clock = pygame.time.Clock()
+game_fold = path.dirname(__file__)
+img_folder = path.join(game_fold, 'img')
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 30))
-        self.image.fill(GREEN)
+        self.image = player_img
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
@@ -67,8 +69,7 @@ class Bullet(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 30))
-        self.image.fill(RED)
+        self.image = enemy_img
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
@@ -84,6 +85,9 @@ class Enemy(pygame.sprite.Sprite):
             self.speedy = random.randrange(1, 8)
 
 
+player_img = pygame.image.load(path.join(img_folder, 'w-01-150.png'))
+enemy_img = pygame.image.load(path.join(img_folder, 'Ghost.png'))
+
 all_sprites = pygame.sprite.Group()
 enemy = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
@@ -93,6 +97,7 @@ for i in range(8):
     en = Enemy()
     all_sprites.add(en)
     enemy.add(en)
+score = 0
 
 running = True
 while running:
